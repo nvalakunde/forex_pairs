@@ -5,7 +5,7 @@ import 'package:forex_pairs/models/historical_data.dart';
 class HistoryGraph extends StatelessWidget {
   final TradeHistoryData data;
 
-  HistoryGraph({required this.data});
+  const HistoryGraph({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {

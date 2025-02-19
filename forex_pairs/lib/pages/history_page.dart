@@ -4,15 +4,14 @@ import 'package:forex_pairs/bloc/history/history_bloc.dart';
 import 'package:forex_pairs/bloc/history/history_event.dart';
 import 'package:forex_pairs/bloc/history/history_state.dart';
 import 'package:forex_pairs/pages/history_graph.dart';
-import 'package:forex_pairs/repositories/history_repository.dart';
-import 'package:forex_pairs/services/finnhub_service.dart';
 
 class HistoryScreen extends StatefulWidget {
   final String symbol;
 
-  const HistoryScreen({Key? key, required this.symbol}) : super(key: key);
+  const HistoryScreen({super.key, required this.symbol});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HistoryScreenState createState() => _HistoryScreenState();
 }
 
@@ -24,14 +23,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
     super.initState();
     BlocProvider.of<HistoryBloc>(context).add(FetchHistoryData(
         symbol: widget.symbol, resolution: selectedResolution));
-  }
-
-  void _onResolutionChanged(String newResolution) {
-    setState(() {
-      selectedResolution = newResolution;
-    });
-    BlocProvider.of<HistoryBloc>(context).add(
-        FetchHistoryData(symbol: widget.symbol, resolution: newResolution));
   }
 
   @override
@@ -48,7 +39,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 child: Text(res == "D" ? "Daily" : "Hourly"),
               );
             }).toList(),
-            onChanged: (_onResolutionChanged) {},
+            onChanged: (onChangeValue) {},
           ),
           Expanded(
             child: BlocBuilder<HistoryBloc, HistoryState>(
@@ -58,7 +49,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 } else if (state is HistoryLoaded) {
                   return HistoryGraph(data: state.data);
                 } else if (state is HistoryError) {
-                  return Center(child: Text(state.message));
+                  return Center(
+                      child: Text("To enable this features apply for premium"));
                 }
                 return Center(child: Text("No Data"));
               },

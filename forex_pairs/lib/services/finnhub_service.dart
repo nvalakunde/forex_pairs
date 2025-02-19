@@ -69,6 +69,7 @@ class FinnhubServiceImpl implements FinnhubService {
         'from':
             "${DateTime.now().subtract(Duration(minutes: 5)).millisecondsSinceEpoch}",
         'to': "${DateTime.now().millisecondsSinceEpoch}",
+        "token": AppConstants.finHubAPIKey,
       });
 
       final apiResponse = await httpClient.get(apiRequestUrl, headers: {
@@ -76,6 +77,16 @@ class FinnhubServiceImpl implements FinnhubService {
       });
       if (apiResponse.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(apiResponse.body);
+        return TradeHistoryData.fromJson(data);
+      } else if (apiResponse.statusCode == 403) {
+        final Map<String, dynamic> data = json.decode(apiResponse.body);
+        var snackBar = SnackBar(
+          content: Text(
+            data["error"] ?? "Please upgrade your plan to premium",
+          ),
+        );
+        ScaffoldMessenger.of(AppConstants.navigatorKey.currentContext!)
+            .showSnackBar(snackBar);
         return TradeHistoryData.fromJson(data);
       } else {
         final Map<String, dynamic> data = {
@@ -88,7 +99,6 @@ class FinnhubServiceImpl implements FinnhubService {
           "v": [75789, 75883, 73485, 5138]
         };
         return TradeHistoryData.fromJson(data);
-        throw Exception('Failed to load historical data');
       }
     } catch (e) {
       throw Exception('Error fetching data: $e');

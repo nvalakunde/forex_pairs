@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:forex_pairs/constants/app_constants.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -8,7 +9,7 @@ class ForexWebSocketService {
   final String _webSocketUrl =
       "wss://ws.finnhub.io?token=${AppConstants.finHubAPIKey}";
   WebSocketChannel? _channel;
-  StreamController<Map<String, dynamic>> _streamController =
+  final StreamController<Map<String, dynamic>> _streamController =
       StreamController.broadcast();
 
   Stream<Map<String, dynamic>> get forexStream => _streamController.stream;
@@ -21,15 +22,15 @@ class ForexWebSocketService {
 
     _channel?.stream.listen(
       (message) {
-        print("Received: $message");
+        debugPrint("Received: $message");
         _handleIncomingMessage(message);
       },
       onError: (error) {
-        print("WebSocket Error: $error");
+        debugPrint("WebSocket Error: $error");
         _reconnect(); // Auto-reconnect on error
       },
       onDone: () {
-        print("WebSocket Connection Closed");
+        debugPrint("WebSocket Connection Closed");
         _reconnect(); // Auto-reconnect on disconnection
       },
     );
@@ -61,7 +62,7 @@ class ForexWebSocketService {
         _streamController.add(jsonData);
       }
     } catch (e) {
-      print("Error decoding WebSocket message: $e");
+      debugPrint("Error decoding WebSocket message: $e");
     }
   }
 
@@ -74,7 +75,7 @@ class ForexWebSocketService {
   /// Reconnect WebSocket after a delay
   void _reconnect() {
     Future.delayed(Duration(seconds: 3), () {
-      print("Reconnecting WebSocket...");
+      debugPrint("Reconnecting WebSocket...");
       connect();
     });
   }

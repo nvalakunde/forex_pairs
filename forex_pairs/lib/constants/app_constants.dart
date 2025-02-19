@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class AppConstants {
   // API endpoint
   static const String baseUrl = 'finnhub.io';
@@ -6,4 +8,6 @@ class AppConstants {
   // finHub API key
   static String finHubAPIKey = "cuq268pr01qviv3iorl0cuq268pr01qviv3iorlg";
   static String finHubWebHookKey = "cuq268pr01qviv3iormg";
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 }

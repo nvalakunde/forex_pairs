@@ -1,5 +1,3 @@
-import 'package:equatable/equatable.dart';
-
 abstract class HistoryEvent {}
 
 class FetchHistoryData extends HistoryEvent {

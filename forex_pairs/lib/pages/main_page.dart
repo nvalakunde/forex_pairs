@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:forex_pairs/bloc/history/history_bloc.dart';
 import 'package:forex_pairs/bloc/main_page/forex_bloc.dart';
 import 'package:forex_pairs/bloc/main_page/forex_event.dart';
 import 'package:forex_pairs/bloc/main_page/forex_state.dart';
+import 'package:forex_pairs/pages/history_page.dart';
 import 'package:forex_pairs/services/websocket_service.dart';
 import 'package:forex_pairs/utils/helper_functions.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -112,42 +114,56 @@ class _MainPageState extends State<MainPage> {
                         // Store latest price for future comparisons
                         previousPrices[symbol] = price;
 
-                        return Card(
-                          margin:
-                              EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          elevation: 3,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          child: ListTile(
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 10),
-                            title: Text(
-                              symbol,
-                              style: GoogleFonts.poppins(
-                                  fontSize: 18, fontWeight: FontWeight.w600),
-                            ),
-                            subtitle: Text(
-                              "Time: ${HelperFunctions.formatTimestamp(item["t"])}",
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                color: Colors.grey[700],
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BlocProvider.value(
+                                  value: BlocProvider.of<HistoryBloc>(
+                                      context), // Use existing HistoryBloc
+                                  child: HistoryScreen(symbol: symbol),
+                                ),
                               ),
-                            ),
-                            trailing: AnimatedSwitcher(
-                              duration: Duration(milliseconds: 500),
-                              transitionBuilder: (child, animation) =>
-                                  FadeTransition(
-                                opacity: animation,
-                                child: ScaleTransition(
-                                    scale: animation, child: child),
-                              ),
-                              child: Text(
-                                "$arrow ${price.toStringAsFixed(5)}",
-                                key: ValueKey(price),
+                            );
+                          },
+                          child: Card(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            elevation: 3,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            child: ListTile(
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 10),
+                              title: Text(
+                                "EUR/USD",
                                 style: GoogleFonts.poppins(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: priceColor,
+                                    fontSize: 18, fontWeight: FontWeight.w600),
+                              ),
+                              subtitle: Text(
+                                "Time: ${HelperFunctions.formatTimestamp(item["t"])}",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                              trailing: AnimatedSwitcher(
+                                duration: Duration(milliseconds: 500),
+                                transitionBuilder: (child, animation) =>
+                                    FadeTransition(
+                                  opacity: animation,
+                                  child: ScaleTransition(
+                                      scale: animation, child: child),
+                                ),
+                                child: Text(
+                                  "$arrow ${price.toStringAsFixed(5)}",
+                                  key: ValueKey(price),
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: priceColor,
+                                  ),
                                 ),
                               ),
                             ),

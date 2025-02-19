@@ -3,7 +3,6 @@ import 'package:forex_pairs/repositories/history_repository.dart';
 import 'history_event.dart';
 import 'history_state.dart';
 
-
 class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   final HistoryRepository repository;
 
