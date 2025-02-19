@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:forex_pairs/services/finnhub_service.dart';
 import 'package:forex_pairs/bloc/main_page/forex_bloc.dart';
-import 'package:forex_pairs/bloc/main_page/forex_event.dart';
-import 'package:forex_pairs/repositories/forex_repository.dart';
+import 'package:forex_pairs/services/websocket_service.dart';
 import 'pages/main_page.dart';
 
 void main() {
-  final forexRepository = ForexRepository(FinnhubServiceImpl());
+  final forexWebSocketService = ForexWebSocketService();
 
   runApp(
-    BlocProvider(
-      create: (_) => ForexBloc(forexRepository)..add(LoadForexPairs()),
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => ForexBloc(forexWebSocketService)),
+      ],
       child: FXTMApp(),
     ),
   );

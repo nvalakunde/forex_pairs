@@ -1,10 +1,22 @@
-import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-abstract class ForexEvent extends Equatable {
-  @override
-  List<Object> get props => [];
+abstract class ForexEvent {}
+
+class ConnectWebSocketEvent extends ForexEvent {}
+
+class DisconnectWebSocketEvent extends ForexEvent {}
+
+class SubscribePairEvent extends ForexEvent {
+  final String symbol;
+  SubscribePairEvent(this.symbol);
 }
 
-class LoadForexPairs extends ForexEvent {}
+class UnsubscribePairEvent extends ForexEvent {
+  final String symbol;
+  UnsubscribePairEvent(this.symbol);
+}
 
-class RefreshForexPairs extends ForexEvent {}
+class UpdateForexDataEvent extends ForexEvent {
+  final Map<String, dynamic> data;
+  UpdateForexDataEvent(this.data);
+}

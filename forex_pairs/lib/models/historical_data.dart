@@ -1,43 +1,28 @@
-import 'candle.dart'; // Assuming Candle is defined in candle.dart
+class TradeHistoryData {
+  final List<double> close;
+  final List<double> high;
+  final List<double> low;
+  final List<double> open;
+  final List<int> timestamps;
+  final List<int> volume;
 
-class HistoricalData {
-  final List<Candle> candles;
-  final String symbol;
-  final String resolution; // E.g., "1d", "1h", "5m" for timeframes
-  final int from; // Unix timestamp for the start date
-  final int to; // Unix timestamp for the end date
-
-  HistoricalData({
-    required this.candles,
-    required this.symbol,
-    required this.resolution,
-    required this.from,
-    required this.to,
+  TradeHistoryData({
+    required this.close,
+    required this.high,
+    required this.low,
+    required this.open,
+    required this.timestamps,
+    required this.volume,
   });
 
-  // Factory method to create HistoricalData from a list of JSON data
-  factory HistoricalData.fromJson(Map<String, dynamic> json) {
-    List<Candle> candles = (json['candles'] as List)
-        .map((candleJson) => Candle.fromJson(candleJson))
-        .toList();
-
-    return HistoricalData(
-      candles: candles,
-      symbol: json['symbol'],
-      resolution: json['resolution'],
-      from: json['from'],
-      to: json['to'],
+  factory TradeHistoryData.fromJson(Map<String, dynamic> json) {
+    return TradeHistoryData(
+      close: List<double>.from(json['c']),
+      high: List<double>.from(json['h']),
+      low: List<double>.from(json['l']),
+      open: List<double>.from(json['o']),
+      timestamps: List<int>.from(json['t']),
+      volume: List<int>.from(json['v']),
     );
-  }
-
-  // Method to convert HistoricalData instance to a map
-  Map<String, dynamic> toJson() {
-    return {
-      'candles': candles.map((candle) => candle.toJson()).toList(),
-      'symbol': symbol,
-      'resolution': resolution,
-      'from': from,
-      'to': to,
-    };
   }
 }

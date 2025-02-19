@@ -10,7 +10,5 @@ class ForexRepository {
     return _service.fetchForexPairs();
   }
 
-  Future<List<Map<String, dynamic>>> getHistoricalData(String symbol) {
-    return _service.fetchHistoricalData(symbol);
-  }
+
 }

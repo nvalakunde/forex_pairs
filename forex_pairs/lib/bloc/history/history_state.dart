@@ -1,18 +1,27 @@
+import 'package:equatable/equatable.dart';
+import 'package:forex_pairs/models/historical_data.dart';
 
-abstract class HistoryState {}
-
-class HistoryInitialState extends HistoryState {}
-
-class HistoryLoadingState extends HistoryState {}
-
-class HistoryLoadedState extends HistoryState {
-  final List<Map<String, dynamic>> historicalData;
-
-  HistoryLoadedState({required this.historicalData});
+abstract class HistoryState extends Equatable {
+  @override
+  List<Object> get props => [];
 }
 
-class HistoryErrorState extends HistoryState {
-  final String error;
+class HistoryLoading extends HistoryState {}
 
-  HistoryErrorState(String string, {required this.error});
+class HistoryLoaded extends HistoryState {
+  final TradeHistoryData data;
+
+  HistoryLoaded(this.data);
+
+  @override
+  List<Object> get props => [data];
+}
+
+class HistoryError extends HistoryState {
+  final String message;
+
+  HistoryError(this.message);
+
+  @override
+  List<Object> get props => [message];
 }

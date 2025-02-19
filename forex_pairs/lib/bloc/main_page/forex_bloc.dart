@@ -1,52 +1,33 @@
-import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../repositories/forex_repository.dart';
-import 'forex_event.dart';
-import 'forex_state.dart';
+import 'package:forex_pairs/bloc/main_page/forex_event.dart';
+import 'package:forex_pairs/bloc/main_page/forex_state.dart';
+import 'package:forex_pairs/services/websocket_service.dart';
 
 class ForexBloc extends Bloc<ForexEvent, ForexState> {
-  final ForexRepository forexRepository;
-  Timer? _timer;
+  final ForexWebSocketService _webSocketService;
 
-  ForexBloc(this.forexRepository) : super(ForexInitial()) {
-    on<LoadForexPairs>(_onLoadForexPairs);
-    on<RefreshForexPairs>(_onRefreshForexPairs);
-
-    // Start auto-refresh every 10 seconds
-    _startAutoRefresh();
-  }
-
-  void _startAutoRefresh() {
-    _timer?.cancel(); // Cancel any existing timer
-    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
-      add(RefreshForexPairs());
+  ForexBloc(this._webSocketService) : super(ForexInitial()) {
+    on<ConnectWebSocketEvent>((event, emit) {
+      _webSocketService.connect();
+      _webSocketService.forexStream.listen((data) {
+        add(UpdateForexDataEvent(data));
+      });
     });
-  }
 
-  Future<void> _onLoadForexPairs(
-      LoadForexPairs event, Emitter<ForexState> emit) async {
-    emit(ForexLoading());
-    try {
-      final pairs = await forexRepository.getForexPairs();
-      emit(ForexLoaded(pairs));
-    } catch (e) {
-      emit(ForexError("Failed to load Forex data"));
-    }
-  }
+    on<DisconnectWebSocketEvent>((event, emit) {
+      _webSocketService.disconnect();
+    });
 
-  Future<void> _onRefreshForexPairs(
-      RefreshForexPairs event, Emitter<ForexState> emit) async {
-    try {
-      final pairs = await forexRepository.getForexPairs();
-      emit(ForexLoaded(pairs));
-    } catch (e) {
-      emit(ForexError("Failed to refresh Forex data"));
-    }
-  }
+    on<SubscribePairEvent>((event, emit) {
+      _webSocketService.subscribeToForexPair(event.symbol);
+    });
 
-  @override
-  Future<void> close() {
-    _timer?.cancel(); // Stop the timer when BLoC is closed
-    return super.close();
+    on<UnsubscribePairEvent>((event, emit) {
+      _webSocketService.unsubscribeFromForexPair(event.symbol);
+    });
+
+    on<UpdateForexDataEvent>((event, emit) {
+      emit(ForexDataUpdated(event.data));
+    });
   }
 }
